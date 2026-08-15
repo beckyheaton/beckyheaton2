@@ -67,6 +67,15 @@ html, body {
     margin: 0;
 }
 
+/* //////// Shared "no highlight on click/tap" rule //////// */
+#beckyButton, #soundButton, #work-button, #aboutButton, #toggleText {
+    user-select: none; /* Stops click-and-drag from highlighting the button text */
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    -webkit-tap-highlight-color: transparent; /* Removes the grey/blue flash Chrome/Safari show on tap on mobile */
+}
+
 /* //////// Header //////// */
 header {
     position: fixed; /* Fixes the header at the top of the viewport */
@@ -176,7 +185,7 @@ header {
     left: var(--artwork-container-left); /* Control the horizontal position with this variable */
     top: var(--artwork-container-top); /* Control the vertical position with this variable */
     width: 500px;
-    height: 400px;
+    height: 575px;
     overflow-y: hidden; /* Hide overflow by default */
     z-index: 0; /* Below header's z-index:1, so this box (which occupies space even while
         #artwork-list inside it is hidden) can never win the click over the header's buttons */

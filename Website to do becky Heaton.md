@@ -9,9 +9,7 @@ Website to do Becky Heaton:
 * Put up resume
 * Update resume
 
-* Get email button at bottom working
-* Make all buttons not highlight
-* make artworks fade at right place
+
 
 
 
