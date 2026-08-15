@@ -1,61 +1,57 @@
 document.addEventListener('DOMContentLoaded', function() {
-    console.log("Script loaded and running"); // Debugging marker
-
 
     // =======================
     // Becky Button
     // =======================
     const beckyButton = document.getElementById('beckyButton');
 
-    // Add a click event listener to reload the page
     beckyButton.addEventListener('click', function() {
-        location.reload(); // Reloads the current page
+        location.reload();
     });
+
+    // =======================
+    // Shared show/hide helper
+    // =======================
+    function toggleDisplay(el) {
+        el.style.display = (el.style.display === 'none' || el.style.display === '') ? 'block' : 'none';
+        return el.style.display;
+    }
 
     // =======================
     // Sound Button Setup
     // =======================
     const soundButton = document.getElementById('soundButton');
     const clickSound = new Audio('sounds/imaginaryBeach.wav');
-    const hoverSound = new Audio('sounds/edoFurin.wav'); // Load the hover sound
-    clickSound.loop = true; // Ensure the sound loops continuously
-    console.log(soundButton); // Check if the element is correctly retrieved
+    const hoverSound = new Audio('sounds/edoFurin.wav');
+    clickSound.loop = true;
     let isSoundOn = false;
 
-    // Add click event listener
     soundButton.addEventListener('click', function() {
-        console.log("Sound button clicked"); // Debugging marker
         if (isSoundOn) {
             soundButton.textContent = "turn sound on";
-            clickSound.muted = true; // Mute the sound
+            clickSound.muted = true;
         } else {
             soundButton.textContent = "turn sound off";
-            clickSound.muted = false; // Unmute the sound
-            clickSound.play(); // Ensure the sound is playing when unmuted
+            clickSound.muted = false;
+            clickSound.play();
         }
-
-        // Toggle the state
         isSoundOn = !isSoundOn;
-    }); 
-
-    // Add 'hover' (mouseover) event listener 
-    soundButton.addEventListener('mouseover', function() {
-        hoverSound.play(); // Play the hover sound
     });
 
+    soundButton.addEventListener('mouseover', function() {
+        hoverSound.play();
+    });
 
     // =======================
     // Ripple Effect Setup
     // =======================
-    // Initialize ripples without mouse interaction
     $('body').ripples({
         resolution: 512,
         dropRadius: 20, // px
         perturbance: 0.04,
-        interactive: false // Disable automatic ripple interaction
+        interactive: false
     });
 
-    // Continuous ripple effect while holding down the mouse
     let isMouseDown = false;
 
     document.body.addEventListener('mousedown', function(event) {
@@ -80,73 +76,91 @@ document.addEventListener('DOMContentLoaded', function() {
     // =======================
     // Artwork Button
     // =======================
-
     const workButton = document.getElementById('work-button');
     const artworkList = document.getElementById('artwork-list');
-    
-    // Toggle the visibility of the artwork list when the button is clicked
+
     workButton.addEventListener('click', function() {
-        if (artworkList.style.display === 'none' || artworkList.style.display === '') {
-            artworkList.style.display = 'block'; // Show the artwork list
-        } else {
-            artworkList.style.display = 'none'; // Hide the artwork list
-            workButton.textContent = 'work'; // Reset button text
-        }
+        const state = toggleDisplay(artworkList);
+        if (state === 'none') workButton.textContent = 'work'; // Reset button text
     });
 
     // =======================
     // Artwork List Setup
     // =======================
     const categories = ["websites", "performances", "games", "films", "photographs"];
+
     fetch('artworks.json')
         .then(response => response.json())
-        .then(data => {
+        .then(({ artworks }) => {
             const list = document.getElementById('artwork-list');
-    
+
+            const byCategory = artworks.reduce((groups, artwork) => {
+                const key = artwork.category.toLowerCase();
+                (groups[key] ??= []).push(artwork);
+                return groups;
+            }, {});
+
             categories.forEach(category => {
                 const categoryHeader = document.createElement('h2');
                 categoryHeader.textContent = category;
                 list.appendChild(categoryHeader);
-    
-                const categoryArtworks = data.artworks.filter(artwork => artwork.category.toLowerCase() === category);
-                categoryArtworks.forEach(artwork => {
+
+                (byCategory[category] || []).forEach(artwork => {
                     const listItem = document.createElement('div');
-                    listItem.classList.add('artwork-item'); // Add a class for consistent styling
-    
+                    listItem.classList.add('artwork-item');
+
+                    const inner = `${artwork.date} <em>${artwork.title}</em> ${artwork.location || ''}`;
+
                     if (artwork.url) {
                         const link = document.createElement('a');
-                        link.href = artwork.url; // Only add the URL if it exists
-                        link.target = "_blank"; // Open in a new tab
-                        link.innerHTML = `${artwork.date} <em>${artwork.title}</em> ${artwork.location || ''}`;
+                        link.href = artwork.url;
+                        link.target = "_blank";
+                        link.innerHTML = inner;
                         listItem.appendChild(link);
                     } else {
-                        listItem.innerHTML = `${artwork.date} <em>${artwork.title}</em> ${artwork.location || ''}`;
+                        listItem.innerHTML = inner;
                     }
-    
+
                     list.appendChild(listItem);
                 });
             });
         })
         .catch(error => console.error('Error loading artworks:', error));
-    
+
     // =======================
     // About Button Toggle
     // =======================
     const aboutButton = document.getElementById('aboutButton');
     const aboutText = document.getElementById('aboutText');
 
-    // Initially hide the aboutText
     aboutText.style.display = 'none';
 
-    // Toggle visibility of aboutText when aboutButton is clicked
+    function positionAboutText() {
+        const btnRect = beckyButton.getBoundingClientRect();
+        aboutText.style.top = btnRect.top + 'px';
+        aboutText.style.left = btnRect.right + 'px';
+    }
+
+    positionAboutText(); // set the initial position on page load
+
+    // Recalculate whenever the layout could have changed size (window resize, browser zoom)
+    window.addEventListener('resize', positionAboutText);
+    if (window.visualViewport) {
+        // Some browsers (e.g. pinch-zoom on trackpads/mobile) only fire this, not window resize
+        window.visualViewport.addEventListener('resize', positionAboutText);
+    }
+
+    // The custom "Andale Mono" font can finish loading after the initial layout, which changes
+    // beckyButton's rendered width - reposition once it's actually ready
+    if (document.fonts) {
+        document.fonts.ready.then(positionAboutText);
+    }
+
     aboutButton.addEventListener('click', function() {
-        if (aboutText.style.display === 'none' || aboutText.style.display === '') {
-            aboutText.style.display = 'block'; // Show the aboutText
-        } else {
-            aboutText.style.display = 'none'; // Hide the aboutText
-        }
+        positionAboutText(); // make sure position is current before revealing it
+        toggleDisplay(aboutText);
     });
-    
+
     // =======================
     // Toggle Text
     // =======================
@@ -155,18 +169,17 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentIndex = 0;
 
     toggleText.addEventListener('click', function() {
-      currentIndex = (currentIndex + 1) % words.length;
-      toggleText.textContent = words[currentIndex];
+        currentIndex = (currentIndex + 1) % words.length;
+        toggleText.textContent = words[currentIndex];
     });
 
     // =======================
-    // Hide email 
+    // Hide email
     // =======================
-    emailE = 'gmail.com'
-    emailE = ('a.beautiful.place01' + '@' + emailE)
+    const emailAddress = 'a.beautiful.place01' + '@' + 'gmail.com';
     const emailLinks = document.querySelectorAll('.emailLink');
     emailLinks.forEach(link => {
-        link.href = 'mailto:' + emailE;
+        link.href = 'mailto:' + emailAddress;
         link.innerText = 'e-mail';
     });
 });

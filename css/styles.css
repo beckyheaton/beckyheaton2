@@ -1,21 +1,32 @@
 @font-face {
     font-family: 'Andale Mono';
-    src: url('../assets/Andale\ Mono.ttf') format('truetype'); 
+    src: url('../assets/Andale\ Mono.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
 
+:root {
+    --text-color: #333;
+    --font-main: 'Andale Mono', sans-serif;
+    --font-size-lg: 1rem;
+    --letter-spacing-tight: -1px;
+    --artwork-container-left: 30px;
+    --artwork-container-top: 7%;
+}
+
 * { margin: 0; padding: 0; }
+
 html, body {
     height: 100%;
     width: 100%;
-    background-image: url('../images/sparklingOcean.png');
-    background-size: cover;
-    background-position: 50% 0;
+    background: url('../images/sparklingOcean.png') top / cover no-repeat;
     overflow: hidden;
-    margin: 0;
-    padding: 0;
-    font-family: Andale Mono, sans-serif;
+    font-family: var(--font-main);
+    color: var(--text-color);
+}
+
+#mobileMessage {
+    display: none;
 }
 
 /* //////// Mobile View //////// */
@@ -28,10 +39,7 @@ html, body {
     #mobileMessage {
         display: block !important;
         font-size: 1rem;
-        font-family: Andale Mono, sans-serif;
-        color: #333; /* Change this to the color you prefer */
         font-style: italic;
-        padding: 0px;
         position: absolute;
         width: 90%;
         height: auto;
@@ -39,11 +47,7 @@ html, body {
         left: 50%;
         transform: translate(-50%, -50%);
         z-index: 20;
-        user-select: none; /* Disable text selection */
-        -webkit-user-select: none; /* Safari */
-        -moz-user-select: none; /* Firefox */
-        -ms-user-select: none; /* Internet Explorer/Edge */
-        text-align: left; /* Justify the text to both left and right */
+        text-align: left;
         line-height: 1.5rem;
         overflow-wrap: break-word; /* Make sure long words break properly */
     }
@@ -55,17 +59,22 @@ html, body {
     }
 }
 
+/* //////// Shared button typography //////// */
+#beckyButton, #soundButton, #work-button, #aboutButton {
+    font-size: var(--font-size-lg);
+    letter-spacing: var(--letter-spacing-tight);
+    cursor: pointer;
+    margin: 0;
+}
 
 /* //////// Header //////// */
-
 header {
     position: fixed; /* Fixes the header at the top of the viewport */
-    top: 30px; /* Positions the header 30px from the top */
-    left: 30px; /* Positions the header 30px from the left */
-    right: 30px; /* Positions the header 30px from the right */
+    top: 30px;
+    left: 30px;
+    right: 30px;
     z-index: 1;
-    width: calc(100% - 60px); /* Ensures the header spans the width minus the margins */
-    color: #333;
+    width: calc(100% - 60px);
     display: flex;
     align-items: center; /* Vertically aligns the h1 and soundButton */
     justify-content: space-between; /* Positions h1 and soundButton on opposite sides */
@@ -73,136 +82,114 @@ header {
 }
 
 /* //////// Becky Button //////// */
-
 #beckyButton {
     position: fixed;
     top: 30px;
     left: 50%;
     transform: translateX(-50%); /* Shift the container left by 50% of its own width */
-    font-size: 1.5rem; 
-    letter-spacing: -1px;
-    cursor: pointer;
-    margin: 0;
     text-align: center;
-    color: #333;
     z-index: 10;
 }
 
 /* //////// Sound Button //////// */
 #soundButton {
-    font-size: 1.5rem; 
-    letter-spacing: -1px;
-    cursor: pointer;
-    margin: 0;
 }
 
 /* //////// Work Button //////// */
 #work-button {
-    font-size: 1.5rem; 
-    letter-spacing: -1px;
-    cursor: pointer;
-    margin: 0;
 }
 
 /* //////// About Button //////// */
-
 #aboutButton {
     position: fixed; /* Position relative to the viewport */
-    top: 50%; 
-    right: 29px; 
+    top: 50%;
+    right: 29px;
     transform: rotate(90deg) translateX(50%); /* Rotate text and adjust position */
     transform-origin: top right; /* Ensure rotation happens around the right edge */
-    /* transform: translateX(-50%); */
-    color: #333;
     text-align: right;
-    cursor: pointer;
-    font-family: Andale Mono, sans-serif;
-    font-size: 1.5rem;
-    letter-spacing: -1px;
     z-index: 11;
-}  
+}
 
 /* //////// About Text //////// */
 #aboutText {
-    position: absolute;
-    font-size: 1rem;
+    position: fixed;
+    font-size: 0.8rem;
     font-style: italic;
-    line-height: 1.5rem;
-    letter-spacing: -1px;
-    color: #333;
-    top: 21px;
-    left: 55.55%;
-    width: 575px; /* Set the initial width of the box */
+    line-height: 1rem;
+    letter-spacing: var(--letter-spacing-tight);
+    width: 350px; /* Set the initial width of the box */
     height: auto; /* Allow height to adjust based on content */
-    padding: 13px; /* Add some padding for aesthetics */
-    border: 1px transparent #333; /* Optional: Add a border around the box */
     box-sizing: border-box; /* Ensure padding is included in width/height */
     overflow-wrap: break-word; /* Make sure long words break properly */
-    resize: both; 
+    resize: both;
     overflow: auto; /* Show scroll if the content exceeds the box */
-    background-color: transparent; /* Optional: Background color for the box */
-    user-select: none; /* Disable text selection */
-    -webkit-user-select: none; /* Safari */
-    -moz-user-select: none; /* Firefox */
-    -ms-user-select: none; /* Internet Explorer/Edge */
+    background-color: transparent;
     text-align: justify; /* Justify the text to both left and right */
+    padding: 2px 4px 2px 4px; /* top right bottom left */
+}
+
+/* Only the first line drops back to a tight, browser-normal line-height, so it sits flush
+   with the top of the box (matching #beckyButton's default leading). Everything after the
+   first line keeps the roomier 1.5rem set above for readability. */
+#aboutText::first-line {
+    line-height: normal;
 }
 
 #toggleText {
     cursor: pointer; /* Changes cursor to pointer */
     font-weight: bold;
     transition: color 0.3s ease; /* Smooth transition for color change */
-  }
-  
-  #toggleText:hover {
-    color: rgb(0, 253, 114);      /* Change color when hovered */
-  }
+}
 
+#toggleText:hover {
+    color: rgb(0, 253, 114); /* Change color when hovered */
+}
 
-
-
-/* //////// Not Finished Message //////// */
-#notFinishedMessage {
-    position: absolute;
-    font-size: 1.5rem; 
-    letter-spacing: -1px;
-    color: #96a2af;
-    margin: 0;
-    top: 40%;
-    left: 50%;
-    transform: translate(-50%, -50%); /* Shift the element back by 50% of its own width and height */
-    text-align: center;
-    user-select: none; /* Disable text selection */
+/* //////// Shared "no text selection" rule //////// */
+#mobileMessage, #aboutText, #artwork-list {
+    user-select: none;
     -webkit-user-select: none; /* Safari */
     -moz-user-select: none; /* Firefox */
     -ms-user-select: none; /* Internet Explorer/Edge */
 }
 
-/* //////// Artwork List //////// */
-
-:root {
-    --artwork-container-left: 30px; /* Define the variable for the left position */
-    --artwork-container-top: 7%; /* Define the variable for the top position */
+/* //////// Not Finished Message //////// */
+#notFinishedMessage {
+    position: absolute;
+    font-size: var(--font-size-lg);
+    letter-spacing: var(--letter-spacing-tight);
+    color: #96a2af;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Shift the element back by 50% of its own width and height */
+    text-align: center;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
 }
+
+/* //////// Artwork List //////// */
 
 .artwork-container {
     position: fixed; /* Position the container relative to the viewport */
     left: var(--artwork-container-left); /* Control the horizontal position with this variable */
     top: var(--artwork-container-top); /* Control the vertical position with this variable */
-    width: 500px; /* Set your desired width */
-    height: 575px; /* Set your desired height */
+    width: 500px;
+    height: 400px;
     overflow-y: hidden; /* Hide overflow by default */
-    z-index: 10; /* Ensure it stays on top */
-    background: transparent; /* Transparent background */
-    border: none; /* Remove borders */
+    z-index: 0; /* Below header's z-index:1, so this box (which occupies space even while
+        #artwork-list inside it is hidden) can never win the click over the header's buttons */
+    background: transparent;
+    border: none;
     scrollbar-width: none; /* Firefox: Hides scrollbar */
     -ms-overflow-style: none; /* Internet Explorer 10+: Hides scrollbar */
-    
+
     /* Create the blur effect at the top and bottom */
-    mask-image: linear-gradient(to bottom, 
-        transparent, 
-        black 10%, 
-        black 90%, 
+    mask-image: linear-gradient(to bottom,
+        transparent,
+        black 10%,
+        black 90%,
         transparent);
 }
 
@@ -212,16 +199,11 @@ header {
 
 #artwork-list {
     display: none; /* Initially hide the list */
-    width: 100%; /* Make the list take up the full width of the container */
-    padding-top: 30px; /* Adjusted padding property */
-    padding-bottom: 60px; /* Extra padding at the bottom for better scrolling */
-    user-select: none;
-    margin: 0; /* Remove any margin to prevent it from affecting positioning */
+    width: 100%;
+    padding: 30px 0 60px;
     text-align: left; /* Ensure the content is left-aligned */
-    color: #333; /* Ensures consistent color */
-    font-family: Andale Mono, sans-serif;
-    font-size: 1.2rem; /* Consistent font size */
-    letter-spacing: -1px; /* Consistent letter spacing */
+    font-size: 0.8rem;
+    letter-spacing: var(--letter-spacing-tight);
 }
 
 #artwork-list h2 {
@@ -245,13 +227,12 @@ header {
 #artwork-list .artwork-item a:hover {
     text-decoration: underline;
 }
- 
 
 
 /* //////// Footer //////// */
 
 footer {
-    position: fixed; /* Change to fixed positioning */
+    position: fixed;
     bottom: 30px;
     width: 100%;
     display: flex;
@@ -269,10 +250,9 @@ footer .links {
 }
 
 footer .links a {
-    font-family: Andale Mono, sans-serif;
     color: rgb(245, 237, 237); /* Text color */
-    font-size: 1.5rem;
-    letter-spacing: -1px;
+    font-size: var(--font-size-lg);
+    letter-spacing: var(--letter-spacing-tight);
     text-decoration: none;
     font-weight: normal;
 }
@@ -280,4 +260,3 @@ footer .links a {
 footer .links a:hover {
     text-decoration: underline;
 }
-
